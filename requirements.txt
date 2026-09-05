@@ -1,0 +1,13 @@
+streamlit
+pandas
+matplotlib
+numpy
+scikit-learn
+joblib
+tabulate
+openai
+python-dotenv
+google-genai
+openpyxl
+python-docx
+reportlab

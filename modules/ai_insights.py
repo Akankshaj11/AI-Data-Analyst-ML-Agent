@@ -48,19 +48,44 @@ def generate_openai_insights(prompt, api_key):
 
 
 def generate_gemini_insights(prompt, api_key):
+    candidate_models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"]
+    last_error = None
+
     try:
         from google import genai
+        client = genai.Client(api_key=api_key)
+        for model_name in candidate_models:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                if response and hasattr(response, 'text') and response.text:
+                    return response.text
+            except Exception as e:
+                last_error = e
+                continue
     except ImportError:
-        raise ImportError(
-            "google-genai is not installed. Please install it with: pip install google-genai"
-        )
+        try:
+            import google.generativeai as genai_legacy
+            genai_legacy.configure(api_key=api_key)
+            for model_name in candidate_models + ["gemini-pro"]:
+                try:
+                    model = genai_legacy.GenerativeModel(model_name)
+                    response = model.generate_content(prompt)
+                    if response and hasattr(response, 'text') and response.text:
+                        return response.text
+                except Exception as e:
+                    last_error = e
+                    continue
+        except ImportError:
+            raise ImportError(
+                "Neither google-genai nor google-generativeai is installed. Install via: pip install google-genai"
+            )
 
-    client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-    return response.text
+    if last_error:
+        raise last_error
+    raise RuntimeError("Could not generate Gemini insights with candidate models.")
 
 
 def generate_ai_insights(df, column_info, data_quality_summary, ml_task_info):

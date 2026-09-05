@@ -4,6 +4,12 @@ An end-to-end Streamlit application for CSV and Excel dataset analysis, data qua
 
 ---
 
+## 🌐 Live Demo
+
+🔗 **[Open Live Application on Streamlit Cloud](https://ai-data-analysis-ml-agent.streamlit.app)**
+
+---
+
 ## Key Features
 
 ### 📊 Data Analysis & Quality Auditing
